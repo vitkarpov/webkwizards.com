@@ -37,7 +37,7 @@ resource "aws_s3_bucket_website_configuration" "website" {
   }
 
   error_document {
-    key = "index.html"
+    key = "404.html"
   }
 }
 
@@ -184,13 +184,4 @@ resource "aws_route53_record" "www" {
     zone_id                = aws_cloudfront_distribution.website.hosted_zone_id
     evaluate_target_health = false
   }
-}
-
-# Upload index.html to S3
-resource "aws_s3_object" "index" {
-  bucket       = aws_s3_bucket.website.id
-  key          = "index.html"
-  source       = "index.html"
-  content_type = "text/html"
-  etag         = filemd5("index.html")
 }

@@ -1,0 +1,280 @@
+/* ==========================================================================
+   Blog — post list rows + article typography.
+   Shared tokens and shell come from global.css.
+   ========================================================================== */
+
+/* ---------- POST LIST ---------- */
+.posts { list-style: none; }
+
+.post-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 30px;
+  padding: 28px;
+  border-bottom: var(--bw) solid var(--line);
+  transition: background 0.14s;
+}
+.post-row:hover { background: var(--paper-2); }
+@media (max-width: 700px) {
+  .post-row { grid-template-columns: 1fr; gap: 10px; padding: 24px 18px; }
+}
+
+.post-row .when {
+  font-family: var(--mono);
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--ink);
+  padding-top: 5px;
+  text-transform: uppercase;
+}
+.post-row .when .reading {
+  display: block;
+  font-weight: 400;
+  color: var(--ink-soft);
+  margin-top: 6px;
+}
+.post-row h2 {
+  font-size: 1.44rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+.post-row:hover h2 { color: var(--accent); }
+.post-row .excerpt { color: var(--ink-soft); font-size: 0.99rem; max-width: 70ch; }
+
+.draft-flag {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--accent);
+  color: var(--paper);
+  padding: 2px 7px;
+  margin-left: 8px;
+  vertical-align: 0.18em;
+}
+
+/* ---------- TAGS ---------- */
+.tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border: var(--bw) solid var(--ink);
+  padding: 3px 9px;
+  transition: background 0.12s, color 0.12s;
+}
+a.tag:hover { background: var(--ink); color: var(--paper); }
+.post-row .tags { margin-top: 14px; }
+.sec-head .tags { margin-top: 20px; }
+
+/* "Back to all posts" link inside an eyebrow label */
+.eyebrow a { border-bottom: var(--bw) solid var(--accent); }
+.eyebrow a:hover { background: var(--accent); color: var(--paper); }
+
+.empty {
+  padding: 48px 28px;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  border-bottom: var(--bw) solid var(--line);
+}
+@media (max-width: 600px) { .empty { padding: 36px 18px; } }
+
+/* ---------- ARTICLE HEADER ---------- */
+.post-head {
+  padding: 44px 28px 32px;
+  border-bottom: var(--bw) solid var(--line);
+}
+@media (max-width: 600px) { .post-head { padding: 32px 18px 26px; } }
+.post-head h1 {
+  font-size: clamp(2rem, 5.4vw, 3.6rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  line-height: 0.96;
+  max-width: 26ch;
+  margin-bottom: 20px;
+}
+.post-head .lede {
+  font-size: clamp(1.02rem, 1.6vw, 1.22rem);
+  color: var(--ink-soft);
+  max-width: 62ch;
+  margin-bottom: 24px;
+}
+.post-meta {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: baseline;
+}
+.post-meta .sep { color: var(--accent); font-weight: 700; }
+.post-head .tags { margin-top: 18px; }
+
+/* ---------- ARTICLE BODY ---------- */
+.prose {
+  padding: 40px 28px 56px;
+  max-width: 74ch;
+  font-size: 1.07rem;
+  line-height: 1.72;
+  color: var(--ink-soft);
+  border-bottom: var(--bw) solid var(--line);
+}
+@media (max-width: 600px) { .prose { padding: 30px 18px 44px; } }
+
+.prose > * + * { margin-top: 1.15em; }
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: var(--ink);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.14;
+  margin-top: 2.1em;
+  scroll-margin-top: 80px;
+}
+.prose h2 {
+  font-size: 1.6rem;
+  text-transform: uppercase;
+  padding-bottom: 10px;
+  border-bottom: var(--bw) solid var(--line);
+}
+.prose h3 { font-size: 1.24rem; }
+.prose h4 {
+  font-family: var(--mono);
+  font-size: 0.92rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.prose strong { color: var(--ink); font-weight: 700; }
+
+.prose a {
+  color: var(--ink);
+  font-weight: 500;
+  border-bottom: var(--bw) solid var(--accent);
+  transition: background 0.12s, color 0.12s;
+}
+.prose a:hover { background: var(--accent); color: var(--paper); }
+
+.prose ul, .prose ol { padding-left: 1.4em; }
+.prose li + li { margin-top: 0.45em; }
+.prose li::marker { color: var(--accent); font-weight: 700; }
+
+.prose blockquote {
+  border-left: 4px solid var(--accent);
+  padding: 4px 0 4px 20px;
+  font-size: 1.12rem;
+  color: var(--ink);
+}
+
+.prose hr {
+  border: none;
+  border-top: var(--bw) solid var(--line);
+  margin: 2.4em 0;
+}
+
+.prose code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: var(--paper-2);
+  border: 1px solid rgba(10, 10, 10, 0.18);
+  padding: 1px 5px;
+}
+
+.prose pre {
+  font-family: var(--mono);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  padding: 20px;
+  border: var(--bw) solid var(--ink);
+  overflow-x: auto;
+  /* Shiki sets its own background; the border ties it to the paper frame. */
+}
+.prose pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+.prose img,
+.prose video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: var(--bw) solid var(--ink);
+}
+
+.prose figure figcaption {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  margin-top: 10px;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.96rem;
+}
+.prose th, .prose td {
+  border: 1px solid rgba(10, 10, 10, 0.22);
+  padding: 10px 12px;
+  text-align: left;
+}
+.prose th {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  background: var(--paper-2);
+}
+
+/* ---------- POST FOOTER NAV ---------- */
+.post-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: var(--bw) solid var(--line);
+}
+@media (max-width: 700px) { .post-nav { grid-template-columns: 1fr; } }
+.post-nav a {
+  padding: 24px 28px;
+  transition: background 0.14s;
+}
+@media (max-width: 600px) { .post-nav a { padding: 20px 18px; } }
+.post-nav a:hover { background: var(--paper-2); }
+.post-nav a:first-child { border-right: var(--bw) solid var(--line); }
+@media (max-width: 700px) {
+  .post-nav a:first-child { border-right: none; border-bottom: var(--bw) solid var(--line); }
+}
+/* First and last post only have one neighbour — let it span the full width. */
+.post-nav a:only-child { grid-column: 1 / -1; border-right: none; }
+.post-nav .dir {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 8px;
+}
+.post-nav .to-title { font-weight: 700; font-size: 1.06rem; letter-spacing: -0.015em; }
+.post-nav .next { text-align: right; }
+@media (max-width: 700px) { .post-nav .next { text-align: left; } }

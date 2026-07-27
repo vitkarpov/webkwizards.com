@@ -1,0 +1,18 @@
+---
+import { AUTHOR, EMAIL, LINKEDIN_URL } from '../consts';
+
+const year = new Date().getFullYear();
+---
+
+<footer>
+  <div class="foot">
+    <div class="copy">© {year} {AUTHOR} — Fractional CTO</div>
+    <div class="foot-links">
+      <a href="/blog/">Blog</a>
+      <a href={LINKEDIN_URL} target="_blank" rel="noopener">LinkedIn</a>
+      <a href={`mailto:${EMAIL}`}>Email</a>
+      <a href="/rss.xml">RSS</a>
+      <a href="#top">Top ↑</a>
+    </div>
+  </div>
+</footer>

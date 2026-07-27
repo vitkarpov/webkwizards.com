@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { AUTHOR } from '../consts';
+import '../styles/home.css';
+---
+
+<BaseLayout title={`Page not found — ${AUTHOR}`} description="That page doesn't exist." noindex>
+  <section class="hero">
+    <div class="wrap">
+      <div class="status"><span class="dot"></span> Error 404</div>
+      <h1>This page <span class="mark">doesn't exist</span></h1>
+      <p class="lede">
+        The link is either broken or the page has moved. Nothing lost — here's the way back.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="/">Back home →</a>
+        <a class="btn btn-ghost" href="/blog/">Read the blog</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

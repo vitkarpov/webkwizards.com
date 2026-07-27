@@ -1,167 +1,233 @@
-# WebKwizards.com - Coming Soon Page
+# webkwizards.com
 
-A simple static website with "coming soon" page deployed to AWS S3 with CloudFront CDN and HTTPS.
+Landing page and blog for Viktor Karpov — Fractional CTO. A statically generated
+[Astro](https://astro.build) site served from S3 behind CloudFront, with
+infrastructure managed by Terraform.
 
-## Architecture
+No JavaScript ships to the browser: every page is HTML and CSS generated at build
+time, including syntax highlighting.
 
-- **S3**: Static website hosting
-- **CloudFront**: CDN for HTTPS and global distribution
-- **Route 53**: DNS management and domain verification
-- **ACM**: SSL/TLS certificate for HTTPS
+## Requirements
 
-## Prerequisites
+| Tool | Version | Notes |
+| --- | --- | --- |
+| Node | 22.12+ | `nvm use` picks it up from `.nvmrc`. Astro 7 requires it. |
+| AWS CLI | v2 | Authenticated against the `webkwizards` profile. |
+| Terraform | 1.0+ | Only needed for infrastructure changes. |
 
-1. AWS CLI configured with appropriate credentials
-2. Terraform installed (>= 1.0)
-3. Domain `webkwizards.com` registered in AWS Route 53
-
-## Verify Route 53 Hosted Zone
-
-Before deploying, verify that your domain is properly configured in Route 53:
+## Local development
 
 ```bash
-aws route53 list-hosted-zones --query "HostedZones[?Name=='webkwizards.com.']"
+nvm use
+npm install
+npm run dev      # http://localhost:4321
 ```
 
-This should return your hosted zone with details. If not, you need to create a hosted zone first:
+Astro 7 runs the dev server as a background daemon:
 
 ```bash
-aws route53 create-hosted-zone --name webkwizards.com --caller-reference $(date +%s)
+npx astro dev status
+npx astro dev logs
+npx astro dev stop
 ```
 
-## Deployment Steps
-
-### 1. Initialize Terraform
+Other scripts:
 
 ```bash
-terraform init
+npm run build     # generate dist/
+npm run preview   # serve dist/ locally
+npm run check     # typecheck .astro and .ts files
 ```
 
-### 2. Review the Plan
+## Writing a post
+
+Posts are Markdown files in `src/content/blog/`. The filename becomes the URL:
+`my-post.md` publishes to `/blog/my-post/`.
+
+```bash
+cp docs/post-template.md src/content/blog/my-post.md
+```
+
+`docs/post-template.md` documents every frontmatter field and exercises each
+element the stylesheet supports (headings, lists, quotes, code, tables, images).
+It lives outside `src/content/blog/`, so it is never published.
+
+Minimum frontmatter:
+
+```yaml
+---
+title: The post title
+description: One or two sentences, used as the list excerpt, meta description, and RSS summary.
+pubDate: 2026-07-27
+tags: ['Architecture', 'AI']
+draft: true
+---
+```
+
+Frontmatter is validated against the schema in `src/content.config.ts` at build
+time — a missing or misspelled field fails `npm run build` rather than shipping
+broken metadata.
+
+Set `draft: true` while writing. Drafts render at `npm run dev` but are excluded
+from production builds, so they cannot reach S3. Delete the line to publish.
+
+Each tag automatically gets an archive page at `/blog/tags/<slug>/`, and posts
+are added to `/rss.xml` and the sitemap.
+
+> Until the first post exists, `npm run build` prints
+> `The collection "blog" does not exist or is empty`. That is expected and goes
+> away as soon as `src/content/blog/` contains a Markdown file.
+
+## Project layout
+
+```
+astro.config.mjs           site URL, trailing slashes, sitemap, Shiki theme
+src/
+  consts.ts                site-wide strings (titles, email, links)
+  content.config.ts        blog collection + frontmatter schema
+  content/blog/            posts (Markdown) — the only place content lives
+  layouts/BaseLayout.astro <head>, metadata, page shell
+  components/              Header, Footer, PostList
+  pages/
+    index.astro            landing page
+    404.astro
+    rss.xml.ts             RSS feed
+    blog/index.astro       post list
+    blog/[...slug].astro   individual post
+    blog/tags/[tag].astro  tag archive
+  lib/                     post queries, date and reading-time helpers
+  styles/
+    global.css             design tokens + shell (header, footer, buttons)
+    home.css               landing page sections
+    blog.css               post list + article typography
+public/                    served verbatim (robots.txt, images)
+docs/post-template.md      copy this to start a post
+deploy.sh                  build + publish
+main.tf, variables.tf, outputs.tf
+```
+
+The design system lives in `src/styles/global.css` as CSS custom properties
+(`--paper`, `--ink`, `--accent`, `--mono`, `--sans`). Change a token there and it
+applies to the landing page, the blog, and the 404 page together.
+
+## Deploying
+
+```bash
+aws sso login --profile webkwizards   # once per session
+./deploy.sh
+```
+
+`deploy.sh` builds the site and syncs `dist/` to S3, then invalidates CloudFront.
+It refuses to run if credentials are invalid or the build produced no
+`dist/index.html`.
+
+Cache headers are set per file type, which is why content is no longer uploaded
+by Terraform:
+
+| Files | `Cache-Control` | Why |
+| --- | --- | --- |
+| `_astro/*` | `max-age=31536000, immutable` | Filenames contain a content hash. |
+| HTML, `rss.xml`, sitemaps | `max-age=0, must-revalidate` | A new post must never sit invisible in a cache. |
+
+Assets are uploaded before pages and are **not** deleted, so a visitor still on
+the previous HTML keeps resolving the files it references. Pages are synced with
+`--delete` so removed posts stop returning 200.
+
+To prune orphaned assets from earlier builds:
+
+```bash
+aws s3 sync dist/ "s3://webkwizards.com/" --delete --exclude "*" --include "_astro/*" --profile webkwizards
+```
+
+Overrides: `SKIP_BUILD=1` publishes the existing `dist/`, and `BUCKET` /
+`DISTRIBUTION_ID` / `AWS_PROFILE` bypass the Terraform lookups.
+
+### One-time migration step
+
+Terraform used to upload the old single-file `index.html` as
+`aws_s3_object.index`. That resource has been removed from `main.tf`, so the
+**next `terraform apply` would delete `index.html` from the bucket** and take the
+site down until the following deploy.
+
+Run this once, before the next apply, to make Terraform forget the object without
+touching the file in S3:
+
+```bash
+terraform state rm aws_s3_object.index
+```
+
+Then confirm the plan is clean apart from the `error_document` change:
 
 ```bash
 terraform plan
 ```
 
-This will show you all the resources that will be created:
-- S3 bucket for website hosting
-- CloudFront distribution
-- ACM certificate (with DNS validation)
-- Route 53 records for DNS and certificate validation
+## Infrastructure
 
-### 3. Apply the Configuration
+- **S3** — static website hosting. The website endpoint (not the REST endpoint)
+  is the CloudFront origin, so it resolves `/blog/post/` to
+  `/blog/post/index.html` on its own. That is why clean URLs work without a
+  CloudFront Function, and why `astro.config.mjs` sets
+  `trailingSlash: 'always'`.
+- **CloudFront** — HTTPS, compression, global distribution. `error_document` is
+  `404.html`, so unknown paths render the styled 404 page.
+- **ACM** — TLS certificate for `webkwizards.com` and `www`, in `us-east-1`.
+- **Route 53** — DNS, with A-record aliases for the apex and `www`.
+
+Applying infrastructure changes:
 
 ```bash
+terraform init
+terraform plan
 terraform apply
 ```
 
-Type `yes` when prompted. This will:
-1. Create the S3 bucket and upload index.html
-2. Request an ACM certificate
-3. Create Route 53 records for certificate validation
-4. Wait for certificate validation (may take a few minutes)
-5. Create CloudFront distribution
-6. Create Route 53 A records pointing to CloudFront
+Useful outputs: `terraform output` exposes `website_url`, `s3_bucket_name`,
+`cloudfront_distribution_id`, and `route53_zone_id`.
 
-**Note**: CloudFront distribution deployment can take 15-30 minutes.
+## Troubleshooting
 
-### 4. Verify Deployment
-
-After Terraform completes, check the outputs:
+**A deleted or renamed post still appears in the build.** The content layer
+caches parsed entries. Clear it and rebuild:
 
 ```bash
-terraform output
+npx astro dev stop
+rm -rf node_modules/.astro dist
+npm run build
 ```
 
-You should see:
-- `website_url`: Your website URL (https://webkwizards.com)
-- `cloudfront_distribution_id`: CloudFront distribution ID
-- `s3_bucket_name`: S3 bucket name
-
-### 5. Test the Website
-
-Wait for CloudFront to fully deploy (check status in AWS Console or CLI):
+**Changes are not visible on the live site.** Check the invalidation finished:
 
 ```bash
-aws cloudfront get-distribution --id $(terraform output -raw cloudfront_distribution_id) --query 'Distribution.Status'
+aws cloudfront get-invalidation --distribution-id "$(terraform output -raw cloudfront_distribution_id)" --id <invalidation-id> --profile webkwizards
 ```
 
-Once status is "Deployed", visit:
-- https://webkwizards.com
-- https://www.webkwizards.com
+**Certificate validation is stuck.** Verify the validation records exist and have
+propagated:
 
-## Updating the Website
+```bash
+aws route53 list-resource-record-sets --hosted-zone-id "$(terraform output -raw route53_zone_id)"
+dig _acme-challenge.webkwizards.com
+```
 
-To update the HTML content:
+**Domain not resolving.** Confirm the registrar's nameservers match Route 53:
 
-1. Edit `index.html`
-2. Apply changes:
-   ```bash
-   terraform apply
-   ```
-3. Invalidate CloudFront cache (optional, for immediate updates):
-   ```bash
-   aws cloudfront create-invalidation \
-     --distribution-id $(terraform output -raw cloudfront_distribution_id) \
-     --paths "/*"
-   ```
+```bash
+aws route53 get-hosted-zone --id "$(terraform output -raw route53_zone_id)" --query 'DelegationSet.NameServers'
+```
 
-## Cost Estimate
+## Cost
 
-- **Route 53**: $0.50/month per hosted zone + $0.40 per million queries
-- **S3**: Negligible for a single HTML file
-- **CloudFront**: Free tier includes 1TB data transfer out per month
-- **ACM Certificate**: Free
-
-**Estimated monthly cost**: ~$1-2/month (mostly Route 53)
+Roughly **$1–2/month**, almost entirely Route 53 ($0.50 per hosted zone plus
+query charges). S3 storage for a text site is negligible, CloudFront stays inside
+the free tier at this traffic level, and the ACM certificate is free.
 
 ## Cleanup
-
-To destroy all resources:
 
 ```bash
 terraform destroy
 ```
 
-Type `yes` when prompted. This will remove:
-- CloudFront distribution
-- S3 bucket and contents
-- Route 53 records (but not the hosted zone)
-- ACM certificate
-
-**Note**: The Route 53 hosted zone is not destroyed by Terraform since it's imported via data source.
-
-## Troubleshooting
-
-### Certificate validation stuck
-
-If certificate validation takes too long:
-1. Check Route 53 records were created: `aws route53 list-resource-record-sets --hosted-zone-id $(terraform output -raw route53_zone_id)`
-2. Verify DNS propagation: `dig _acme-challenge.webkwizards.com`
-
-### Domain not resolving
-
-1. Ensure nameservers in your domain registrar match Route 53:
-   ```bash
-   aws route53 get-hosted-zone --id $(terraform output -raw route53_zone_id) --query 'DelegationSet.NameServers'
-   ```
-2. Wait for DNS propagation (can take up to 48 hours)
-
-### CloudFront 403 errors
-
-1. Verify S3 bucket policy allows public access
-2. Check that index.html was uploaded: `aws s3 ls s3://$(terraform output -raw s3_bucket_name)`
-
-## Security Notes
-
-- The S3 bucket is configured for public read access (required for website hosting)
-- HTTPS is enforced via CloudFront (HTTP requests are redirected to HTTPS)
-- TLS 1.2 minimum protocol version is configured
-
-## Files
-
-- `index.html`: The coming soon page
-- `main.tf`: Main Terraform configuration
-- `variables.tf`: Terraform variables
-- `outputs.tf`: Terraform outputs
-- `README.md`: This file
+Removes the CloudFront distribution, S3 bucket and contents, ACM certificate, and
+the Route 53 records. The hosted zone survives, since it is read via a data
+source rather than managed here.

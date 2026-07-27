@@ -1,0 +1,95 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPublishedPosts, postUrl, tagUrl } from '../../lib/posts';
+import { formatDate, isoDate, readingTime } from '../../lib/format';
+import { AUTHOR } from '../../consts';
+import '../../styles/blog.css';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+
+  // `posts` is newest-first, so the previous index is the newer post.
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: {
+      post,
+      newer: posts[i - 1] ?? null,
+      older: posts[i + 1] ?? null,
+    },
+  }));
+}
+
+const { post, newer, older } = Astro.props;
+const { Content } = await render(post);
+const { title, description, pubDate, updatedDate, tags, draft, image } = post.data;
+---
+
+<BaseLayout
+  title={`${title} — ${AUTHOR}`}
+  description={description}
+  ogType="article"
+  image={image}
+  publishedTime={pubDate}
+  modifiedTime={updatedDate}
+  noindex={draft}
+>
+  <article>
+    <header class="post-head">
+      <span class="eyebrow"><b>Notes</b> — <a href="/blog/">Back to all posts</a></span>
+      <h1>{title}{draft && <span class="draft-flag">Draft</span>}</h1>
+      <p class="lede">{description}</p>
+
+      <div class="post-meta">
+        <time datetime={isoDate(pubDate)}>{formatDate(pubDate)}</time>
+        <span class="sep">/</span>
+        <span>{readingTime(post.body)}</span>
+        {
+          updatedDate && (
+            <>
+              <span class="sep">/</span>
+              <span>
+                Updated <time datetime={isoDate(updatedDate)}>{formatDate(updatedDate)}</time>
+              </span>
+            </>
+          )
+        }
+      </div>
+
+      {
+        tags.length > 0 && (
+          <div class="tags">
+            {tags.map((tag) => (
+              <a class="tag" href={tagUrl(tag)}>
+                {tag}
+              </a>
+            ))}
+          </div>
+        )
+      }
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+
+  {
+    (older || newer) && (
+      <nav class="post-nav" aria-label="More posts">
+        {older && (
+          <a href={postUrl(older)}>
+            <span class="dir">← Older</span>
+            <span class="to-title">{older.data.title}</span>
+          </a>
+        )}
+        {newer && (
+          <a href={postUrl(newer)} class="next">
+            <span class="dir">Newer →</span>
+            <span class="to-title">{newer.data.title}</span>
+          </a>
+        )}
+      </nav>
+    )
+  }
+</BaseLayout>

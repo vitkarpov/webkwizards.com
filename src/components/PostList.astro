@@ -1,0 +1,40 @@
+---
+import { postUrl, type Post } from '../lib/posts';
+import { formatDate, isoDate, readingTime } from '../lib/format';
+
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+---
+
+<ul class="posts">
+  {
+    posts.map((post) => (
+      <li>
+        {/* The whole row is the link target, so tags render as plain labels here. */}
+        <a class="post-row" href={postUrl(post)}>
+          <div class="when">
+            <time datetime={isoDate(post.data.pubDate)}>{formatDate(post.data.pubDate)}</time>
+            <span class="reading">{readingTime(post.body)}</span>
+          </div>
+          <div>
+            <h2>
+              {post.data.title}
+              {post.data.draft && <span class="draft-flag">Draft</span>}
+            </h2>
+            <p class="excerpt">{post.data.description}</p>
+            {post.data.tags.length > 0 && (
+              <div class="tags">
+                {post.data.tags.map((tag) => (
+                  <span class="tag">{tag}</span>
+                ))}
+              </div>
+            )}
+          </div>
+        </a>
+      </li>
+    ))
+  }
+</ul>

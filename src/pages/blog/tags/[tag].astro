@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PostList from '../../../components/PostList.astro';
+import { getPublishedPosts, tagSlug } from '../../../lib/posts';
+import { AUTHOR } from '../../../consts';
+import '../../../styles/blog.css';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+
+  // Group by slug rather than raw label: "LLMs" and "llms" must not collide
+  // into two identical routes, which would fail the build.
+  const bySlug = new Map<string, { label: string; posts: typeof posts }>();
+
+  for (const post of posts) {
+    for (const tag of post.data.tags) {
+      const slug = tagSlug(tag);
+      if (!slug) continue;
+
+      const group = bySlug.get(slug);
+      if (group) {
+        if (!group.posts.includes(post)) group.posts.push(post);
+      } else {
+        bySlug.set(slug, { label: tag, posts: [post] });
+      }
+    }
+  }
+
+  return [...bySlug.entries()].map(([slug, { label, posts: tagged }]) => ({
+    params: { tag: slug },
+    props: { label, posts: tagged },
+  }));
+}
+
+const { label, posts } = Astro.props;
+const description = `Posts tagged “${label}” — notes on building AI products that survive production.`;
+---
+
+<BaseLayout title={`${label} — Notes — ${AUTHOR}`} description={description}>
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow"><b>Notes</b> — <a href="/blog/">All posts</a></span>
+      <h1>Tagged: {label}</h1>
+      <p>{posts.length} {posts.length === 1 ? 'post' : 'posts'} tagged “{label}”.</p>
+    </div>
+
+    <PostList posts={posts} />
+  </section>
+</BaseLayout>

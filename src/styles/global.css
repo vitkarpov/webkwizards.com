@@ -1,0 +1,216 @@
+/* ==========================================================================
+   Design tokens + shell shared by every page (landing, blog, 404).
+   Page-specific styles live in home.css / blog.css.
+   ========================================================================== */
+
+:root {
+  --paper: #ece5d6;
+  --paper-2: #e3dbc9;
+  --ink: #0a0a0a;
+  --ink-soft: #3b3a36;
+  --accent: #ff3b1f;
+  --line: #0a0a0a;
+  --mono: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --maxw: 1180px;
+  --bw: 2px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+::selection { background: var(--accent); color: var(--paper); }
+
+body {
+  font-family: var(--sans);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* faint paper grain */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+a { color: inherit; text-decoration: none; }
+
+.frame {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  border-left: var(--bw) solid var(--line);
+  border-right: var(--bw) solid var(--line);
+  position: relative;
+  z-index: 2;
+}
+@media (max-width: 760px) { .frame { border-left: none; border-right: none; } }
+
+.wrap { padding: 0 28px; }
+@media (max-width: 600px) { .wrap { padding: 0 18px; } }
+
+/* ---------- LABELS ---------- */
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  display: inline-block;
+  padding: 4px 0;
+}
+.eyebrow b { color: var(--accent); font-weight: 700; }
+
+/* ---------- NAV ---------- */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--paper);
+  border-bottom: var(--bw) solid var(--line);
+}
+.nav {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  height: 62px;
+  padding: 0 28px;
+}
+@media (max-width: 600px) { .nav { padding: 0 18px; } }
+.brand {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 1.02rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5ch;
+}
+.brand .mark {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 2px 7px;
+}
+.nav-links { display: flex; align-items: stretch; }
+.nav-links a {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 20px;
+  border-left: var(--bw) solid var(--line);
+  transition: background 0.12s, color 0.12s;
+}
+.nav-links a:hover { background: var(--ink); color: var(--paper); }
+.nav-links a[aria-current="page"] { background: var(--paper-2); }
+.nav-links .nav-cta { background: var(--accent); color: var(--paper); font-weight: 700; }
+.nav-links .nav-cta:hover { background: var(--ink); }
+/* Drop the anchor links first; Blog and the CTA are the two that must survive. */
+@media (max-width: 860px) {
+  .nav-links a:not(.nav-cta):not(.nav-blog) { display: none; }
+}
+/* On phones, trade the wordmark for the space Blog needs to stay one tap away. */
+@media (max-width: 520px) {
+  .brand-name { display: none; }
+  .nav-links a { padding: 0 14px; }
+}
+
+/* ---------- BUTTONS ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6ch;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 15px 26px;
+  border: var(--bw) solid var(--ink);
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s, color 0.12s;
+}
+.btn-primary { background: var(--ink); color: var(--paper); }
+.btn-primary:hover {
+  background: var(--accent); color: var(--paper);
+  transform: translate(-3px, -3px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+.btn-ghost { background: var(--paper); color: var(--ink); }
+.btn-ghost:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+/* ---------- SECTION SHELL ---------- */
+section { padding: 0; }
+.sec-head {
+  padding: 40px 28px 30px;
+  border-bottom: var(--bw) solid var(--line);
+}
+@media (max-width: 600px) { .sec-head { padding: 30px 18px 24px; } }
+.sec-head .eyebrow { display: block; margin-bottom: 14px; }
+.sec-head h1,
+.sec-head h2 {
+  font-size: clamp(1.7rem, 4.2vw, 2.9rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  line-height: 1.0;
+  max-width: 22ch;
+}
+.sec-head p { color: var(--ink-soft); font-size: 1.04rem; max-width: 64ch; margin-top: 14px; }
+
+/* ---------- FOOTER ---------- */
+footer { padding: 28px; }
+@media (max-width: 600px) { footer { padding: 24px 18px; } }
+.foot {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+}
+.foot .copy { font-family: var(--mono); font-size: 0.8rem; color: var(--ink-soft); text-transform: uppercase; }
+.foot-links { display: flex; flex-wrap: wrap; gap: 10px; }
+.foot-links a {
+  font-family: var(--mono); font-size: 0.8rem; font-weight: 700;
+  text-transform: uppercase; padding: 6px 11px;
+  border: var(--bw) solid var(--ink);
+  transition: background 0.12s, color 0.12s;
+}
+.foot-links a:hover { background: var(--ink); color: var(--paper); }
+
+/* ---------- A11Y ---------- */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  padding: 12px 18px;
+}
+.skip-link:focus { left: 0; }
+
+:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

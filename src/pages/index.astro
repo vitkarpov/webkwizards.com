@@ -1,0 +1,268 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { CAL_URL, EMAIL, LINKEDIN_URL, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import '../styles/home.css';
+---
+
+<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="status"><span class="dot"></span> Available — new advisory &amp; fractional engagements</div>
+      <h1>Fractional CTO &amp; technical advisor for <span class="mark">AI startups</span></h1>
+      <p class="lede">
+        I help early-stage founders turn an AI idea into a system that ships, scales, and survives diligence — senior
+        technical leadership without the full-time hire. 10+ years building production systems, currently CTO at an AI
+        company, ex-Amazon.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#contact">Book an intro call →</a>
+        <a class="btn btn-ghost" href={LINKEDIN_URL} target="_blank" rel="noopener">View LinkedIn</a>
+      </div>
+
+      <div class="logos">
+        <span class="k">Previously:</span>
+        <span class="co">Amazon</span> /
+        <span class="co">Bird</span> /
+        <span class="co">Proportunity</span>
+        &nbsp;&nbsp;<span class="now">Now: sky-tech.ai</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="sec-head">
+      <span class="eyebrow"><b>01</b> — What I do</span>
+      <h2>Senior technical leadership, on the terms your stage needs.</h2>
+      <p>
+        Most early AI startups don't need a full-time CTO yet — they need someone senior who has shipped real systems to
+        make the right calls before they become expensive. That's where I come in.
+      </p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <span class="num">01</span>
+        <h3>Technical strategy &amp; architecture</h3>
+        <p>
+          Translate the product vision into a pragmatic architecture and roadmap. Choose the stack, the boundaries, and
+          the trade-offs that won't box you in at the next stage.
+        </p>
+      </div>
+      <div class="card">
+        <span class="num">02</span>
+        <h3>From prototype to production</h3>
+        <p>
+          Take an LLM demo or notebook and turn it into a reliable, observable, secure product — evals, guardrails,
+          latency and cost under control, not just a happy-path demo.
+        </p>
+      </div>
+      <div class="card">
+        <span class="num">03</span>
+        <h3>Hands-on building</h3>
+        <p>
+          I still write code. When the team is small, I build the hard parts myself — APIs, data pipelines, infra — and
+          set the patterns the rest of the codebase follows.
+        </p>
+      </div>
+      <div class="card">
+        <span class="num">04</span>
+        <h3>Cloud, infra &amp; DevOps</h3>
+        <p>
+          AWS, Terraform/CDK, CI/CD, and observability done properly from day one. Ship fast without accumulating the
+          kind of debt that stalls you six months in.
+        </p>
+      </div>
+      <div class="card">
+        <span class="num">05</span>
+        <h3>Team &amp; hiring</h3>
+        <p>
+          Define the first engineering hires, interview and calibrate candidates, and set up the autonomous,
+          DevOps-minded team culture that lets a small group move fast.
+        </p>
+      </div>
+      <div class="card">
+        <span class="num">06</span>
+        <h3>Technical due diligence</h3>
+        <p>
+          A clear-eyed read on an architecture, codebase, or AI claims — for founders preparing to raise, or for
+          investors who need a credible technical assessment.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ENGAGEMENT MODELS -->
+  <section id="engage">
+    <div class="sec-head">
+      <span class="eyebrow"><b>02</b> — How we work together</span>
+      <h2>Flexible engagements that match your runway.</h2>
+      <p>
+        Start small, scale up if it's working. No long lock-ins — the goal is to make myself progressively less
+        necessary.
+      </p>
+    </div>
+
+    <div class="engage">
+      <div class="card">
+        <div class="mode">Advisory</div>
+        <h3>The sounding board</h3>
+        <div class="meta">~a few hours / week</div>
+        <ul>
+          <li>Architecture &amp; stack reviews</li>
+          <li>Weekly strategy sessions</li>
+          <li>On-call for the big decisions</li>
+          <li>Hiring &amp; interview support</li>
+        </ul>
+      </div>
+      <div class="card feat">
+        <div class="mode">Fractional CTO</div>
+        <h3>Embedded leadership</h3>
+        <div class="meta">1–3 days / week</div>
+        <ul>
+          <li>Own the technical roadmap</li>
+          <li>Lead &amp; mentor the team</li>
+          <li>Hands-on with the hard parts</li>
+          <li>Represent tech to investors</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="mode">Project</div>
+        <h3>Build the foundation</h3>
+        <div class="meta">Fixed scope</div>
+        <ul>
+          <li>0→1 MVP or core system</li>
+          <li>LLM feature productionization</li>
+          <li>Cloud / infra setup</li>
+          <li>Technical due diligence</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORK / TRACK RECORD -->
+  <section id="work">
+    <div class="sec-head">
+      <span class="eyebrow"><b>03</b> — Track record</span>
+      <h2>A decade of shipping systems that hold up.</h2>
+      <p>
+        From hyperscale advertising infrastructure at Amazon to leading engineering at an AI company today — full
+        ownership, end to end.
+      </p>
+    </div>
+
+    <div class="timeline">
+      <div class="item">
+        <div class="when">2024 — Now</div>
+        <div>
+          <div class="role">Chief Technology Officer <span class="at">· sky-tech.ai</span></div>
+          <div class="where">AI document intelligence — medical, insurance &amp; legal</div>
+          <p class="desc">
+            Lead architecture and engineering for a platform that turns unstructured documents into structured,
+            actionable insight — cutting case-review time by up to 70% while keeping workflows HIPAA/GDPR-compliant and
+            secure. Own the full stack: LLM pipelines, backend services, cloud infrastructure, and team.
+          </p>
+        </div>
+      </div>
+      <div class="item">
+        <div class="when">2023 — 2024</div>
+        <div>
+          <div class="role">Senior Software Engineer <span class="at">· Bird (MessageBird)</span></div>
+          <div class="where">Full-stack · React / Go</div>
+          <p class="desc">
+            Built Bird CRM — a unified platform for marketing, sales, and payments — working across a large-scale,
+            event-driven microservice architecture serving a global customer base.
+          </p>
+        </div>
+      </div>
+      <div class="item">
+        <div class="when">2022 — 2023</div>
+        <div>
+          <div class="role">Lead Engineer <span class="at">· Proportunity</span></div>
+          <div class="where">Fintech start-up · team of 5</div>
+          <p class="desc">
+            Lead developer at a technology-driven mortgage lender. Built the backend — web crawlers and a GraphQL API in
+            TypeScript/Node.js on AWS — owning features end-to-end in a small, fast-moving team.
+          </p>
+        </div>
+      </div>
+      <div class="item">
+        <div class="when">2020 — 2022</div>
+        <div>
+          <div class="role">Software Development Engineer II <span class="at">· Amazon (Ads)</span></div>
+          <div class="where">Edinburgh, UK · Kotlin / React</div>
+          <p class="desc">
+            Designed and shipped "shareable snapshots" — effectively a time machine for the advertising reporting UI —
+            across a Kotlin backend and a React/TypeScript front end at Amazon scale.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="sec-head">
+      <span class="eyebrow"><b>04</b> — About</span>
+      <h2>The best technical leadership makes itself unnecessary.</h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>
+          I'm Viktor — a software engineer with <strong>10+ years</strong> of building high-quality products and
+          untangling hard technical problems. I started in UI and front-end infrastructure (an internal CI/CD platform,
+          before GitHub Actions made that mainstream), then moved deep into backend:
+          <strong>scalable systems, APIs, and event-driven microservices</strong> — always with performance, reliability,
+          and observability front of mind.
+        </p>
+        <p>
+          Today I'm CTO at an AI company, which means I live the early-stage AI startup reality every day: shipping
+          LLM-powered features that have to be accurate, secure, and fast — not just impressive in a demo. I bring that
+          same lens to founders as a <strong>fractional CTO and advisor</strong>.
+        </p>
+        <p>
+          I care about <strong>DevOps culture and fully autonomous teams</strong> — I even ran a podcast about it.
+        </p>
+      </div>
+      <div class="stack-box">
+        <h4>Core stack</h4>
+        <div class="chips">
+          <span class="chip">Kotlin / Spring</span>
+          <span class="chip">Go</span>
+          <span class="chip">TypeScript</span>
+          <span class="chip">React</span>
+          <span class="chip">Node.js</span>
+        </div>
+        <h4>Infra &amp; AI</h4>
+        <div class="chips">
+          <span class="chip">AWS</span>
+          <span class="chip">Terraform / CDK</span>
+          <span class="chip">CI/CD</span>
+          <span class="chip">LLM pipelines</span>
+          <span class="chip">Observability</span>
+        </div>
+        <h4>Approach</h4>
+        <div class="chips">
+          <span class="chip">Event-driven</span>
+          <span class="chip">Microservices</span>
+          <span class="chip">End-to-end ownership</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="contact" class="cta-band">
+    <span class="eyebrow"><b>05</b> — Let's talk</span>
+    <h2>Building something with AI? Let's make sure it's built right.</h2>
+    <p>
+      Book a free 30-minute intro call. Tell me where you are and what's keeping you up at night — I'll tell you straight
+      whether and how I can help.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href={CAL_URL} target="_blank" rel="noopener">Book an intro call →</a>
+      <a class="btn btn-ghost" href={`mailto:${EMAIL}`}>Email me</a>
+    </div>
+  </section>
+</BaseLayout>
