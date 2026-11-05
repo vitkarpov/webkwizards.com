@@ -123,14 +123,25 @@ a.tag:hover { background: var(--ink); color: var(--paper); }
 .post-head .tags { margin-top: 18px; }
 
 /* ---------- ARTICLE BODY ---------- */
+.post-body { border-bottom: var(--bw) solid var(--line); }
+.post-body.has-toc {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+}
+@media (max-width: 1000px) {
+  .post-body.has-toc { display: block; }
+  .toc { display: none; }
+}
+
 .prose {
   padding: 40px 28px 56px;
-  max-width: 74ch;
+  min-width: 0;
   font-size: 1.07rem;
   line-height: 1.72;
   color: var(--ink-soft);
-  border-bottom: var(--bw) solid var(--line);
 }
+/* Keep a comfortable reading measure; the TOC takes the leftover width. */
+.prose > * { max-width: 74ch; }
 @media (max-width: 600px) { .prose { padding: 30px 18px 44px; } }
 
 .prose > * + * { margin-top: 1.15em; }
@@ -245,6 +256,49 @@ a.tag:hover { background: var(--ink); color: var(--paper); }
   color: var(--ink);
   background: var(--paper-2);
 }
+
+/* ---------- TABLE OF CONTENTS ---------- */
+.toc { border-left: var(--bw) solid var(--line); }
+.toc-inner {
+  position: sticky;
+  top: 62px; /* height of the sticky site nav */
+  max-height: calc(100vh - 62px);
+  overflow-y: auto;
+  padding: 40px 24px;
+}
+.toc-label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.toc ol { list-style: none; counter-reset: toc; }
+.toc li { counter-increment: toc; }
+.toc li + li { margin-top: 4px; }
+.toc a {
+  display: grid;
+  grid-template-columns: 2.2em 1fr;
+  padding: 6px 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--ink-soft);
+  transition: color 0.12s;
+}
+.toc a::before {
+  content: counter(toc, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  padding-top: 2px;
+  color: var(--ink-soft);
+}
+.toc a:hover,
+.toc a.active { color: var(--ink); }
+.toc a.active::before { color: var(--accent); font-weight: 700; }
 
 /* ---------- POST FOOTER NAV ---------- */
 .post-nav {

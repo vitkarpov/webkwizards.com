@@ -21,7 +21,8 @@ export async function getStaticPaths() {
 }
 
 const { post, newer, older } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
+const toc = headings.filter((h) => h.depth === 2);
 const { title, description, pubDate, updatedDate, tags, draft, image } = post.data;
 ---
 
@@ -69,8 +70,27 @@ const { title, description, pubDate, updatedDate, tags, draft, image } = post.da
       }
     </header>
 
-    <div class="prose">
-      <Content />
+    <div class:list={['post-body', { 'has-toc': toc.length > 0 }]}>
+      <div class="prose">
+        <Content />
+      </div>
+
+      {
+        toc.length > 0 && (
+          <aside class="toc" aria-label="On this page">
+            <div class="toc-inner">
+              <span class="toc-label">On this page</span>
+              <ol>
+                {toc.map((h) => (
+                  <li>
+                    <a href={`#${h.slug}`}>{h.text}</a>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </aside>
+        )
+      }
     </div>
   </article>
 
@@ -93,3 +113,30 @@ const { title, description, pubDate, updatedDate, tags, draft, image } = post.da
     )
   }
 </BaseLayout>
+
+<script>
+  // Highlight the TOC entry for the section currently being read.
+  const links = new Map(
+    [...document.querySelectorAll<HTMLAnchorElement>('.toc a')].map((a) => [
+      decodeURIComponent(a.hash.slice(1)),
+      a,
+    ]),
+  );
+  const sections = [...links.keys()]
+    .map((id) => document.getElementById(id))
+    .filter((el): el is HTMLElement => el !== null);
+
+  if (sections.length) {
+    const update = () => {
+      // Last heading that has scrolled past the sticky nav (+ some slack).
+      const cutoff = 120;
+      let current = sections[0];
+      for (const el of sections) {
+        if (el.getBoundingClientRect().top <= cutoff) current = el;
+      }
+      links.forEach((a, id) => a.classList.toggle('active', id === current.id));
+    };
+    update();
+    addEventListener('scroll', update, { passive: true });
+  }
+</script>
