@@ -70,7 +70,7 @@ a { color: inherit; text-decoration: none; }
 .eyebrow b { color: var(--accent); font-weight: 700; }
 
 /* ---------- NAV ---------- */
-header {
+.site-header {
   position: sticky;
   top: 0;
   z-index: 50;

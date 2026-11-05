@@ -5,7 +5,7 @@ import { AUTHOR, CAL_URL } from '../consts';
 const onBlog = Astro.url.pathname.startsWith('/blog/');
 ---
 
-<header>
+<header class="site-header">
   <div class="nav">
     <a href="/" class="brand" aria-label={AUTHOR}>
       <span class="mark">VK</span> <span class="brand-name">{AUTHOR}</span>
