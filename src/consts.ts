@@ -3,7 +3,7 @@
 export const SITE_URL = 'https://webkwizards.com';
 export const SITE_TITLE = 'Viktor Karpov — Fractional CTO & Technical Advisor for AI Startups';
 export const SITE_DESCRIPTION =
-  'Fractional CTO and technical advisor for early-stage AI startups. 10+ years building scalable, production-grade systems. Currently CTO at sky-tech.ai, ex-Amazon.';
+  'Fractional CTO and technical advisor for early-stage AI startups. 15 years building scalable, production-grade systems. Senior Backend Engineer at HubSpot, part-time CTO at sky-tech.ai, ex-Amazon.';
 
 export const AUTHOR = 'Viktor Karpov';
 
