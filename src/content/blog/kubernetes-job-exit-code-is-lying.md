@@ -191,9 +191,11 @@ the code. The overall status is chosen in this order: `timed_out` if any step
 timed out, otherwise `error` if any step errored or was skipped, otherwise
 `failed` if any step failed, otherwise `passed`.
 
-**An incomplete check outranks a failed one.** If the build failed and the tests
-never ran, reporting just `failed` would hide the fact that part of the code
-was never checked.
+**An incomplete check outranks a failed one.** If the build failed and the run
+then hit its deadline before the tests finished, reporting just `failed` would
+hide the fact that part of the code was never checked. (The worker keeps
+running the later steps after a failed build, because their output can still
+be useful.)
 
 A few smaller decisions follow from the experiments:
 

@@ -131,9 +131,12 @@ up in a few places:
 - **Put deadlines on contexts.** A request context with a timeout turns
   "hangs forever" into an error you can see. It doesn't fix the bug, but it
   limits the damage to a few slow requests instead of a stuck process.
-- **Set `idle_in_transaction_session_timeout` in Postgres.** Postgres can't
-  detect this deadlock, but it can end sessions that sit idle inside a
-  transaction for too long. That breaks the cycle from the database side.
+- **Don't count on `idle_in_transaction_session_timeout`.** I expected it to
+  break the cycle from the database side, so I tried it. Postgres did
+  terminate the idle sessions after two seconds, but the process stayed stuck.
+  The pool still counted all 11 connections as checked out, because the
+  goroutines holding them were themselves waiting for the pool. Killing the
+  sessions on the server doesn't return the connections to the pool.
 - **Test concurrently.** Here the concurrent contract test helped me. Without
   it I'd only have seen the FK error, and probably blamed the test data.
 
