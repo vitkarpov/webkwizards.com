@@ -3,7 +3,6 @@ title: "Every deploy was quietly stranding SQS messages for 15 minutes"
 description: "An SQS message-age alarm fired on an empty queue. The cause: our Node workers ignored SIGTERM, so each ECS deploy killed them mid-message. Here's how we traced it and the 60-line fix."
 pubDate: 2026-11-05
 tags: ['AWS', 'Node.js', 'Reliability']
-draft: true
 ---
 
 An alarm went off on our dev environment: the oldest message on a

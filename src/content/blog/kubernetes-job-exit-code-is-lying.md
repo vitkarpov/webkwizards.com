@@ -3,7 +3,6 @@ title: "Your Kubernetes Job's exit code is lying to you"
 description: "I made a Kubernetes Job fail three ways: a failing test, an OOM, and a deadline. All three ended as the same Failed, and two of them left no logs. Here's what I learned and how it shaped the result contract of a CI worker."
 pubDate: 2026-11-11
 tags: ['Kubernetes', 'CI', 'Architecture']
-draft: true
 ---
 
 I'm building a small CI system that runs checks on code written by AI agents.

@@ -3,7 +3,6 @@ title: "A missing `tx` didn't fail my test. It deadlocked my service"
 description: "I broke a Postgres transaction on purpose and expected a red test. The test hung instead. One query that skipped the transaction made every pool connection wait on another, and Postgres had no way to tell."
 pubDate: 2026-11-11
 tags: ['Go', 'PostgreSQL', 'Reliability']
-draft: true
 ---
 
 I was writing the Postgres store for a small CI service in Go. Creating a run
