@@ -3,7 +3,6 @@ title: "We stored a parsed tree of LLM output, and the UI stopped fixing broken 
 description: "Our frontend had 1,500 lines of code that repaired broken Markdown from the LLM. Then the backend started storing a parsed tree, the UI rendered it directly, and new content skipped every repair. Here's why the repairs belong on the server."
 pubDate: 2026-11-12
 tags: ['AI', 'Architecture', 'TypeScript']
-draft: true
 ---
 
 LLMs write Markdown that is *almost* right. The table is fine except the header
