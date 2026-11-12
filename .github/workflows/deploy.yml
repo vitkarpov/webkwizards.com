@@ -1,8 +1,8 @@
 # Builds and publishes the site.
 #
-# - Every Wednesday at 07:00 UTC, so a post whose pubDate has arrived goes
-#   live without anyone running a deploy (see getPublishedPosts in
-#   src/lib/posts.ts). Date posts on a Wednesday.
+# - Every day at 07:00 UTC, so a post whose pubDate has arrived goes live
+#   that morning without anyone running a deploy (see getPublishedPosts in
+#   src/lib/posts.ts).
 # - On demand from the Actions tab, or `gh workflow run deploy.yml`.
 #
 # Pushing to main does not deploy.
@@ -12,7 +12,7 @@ name: Deploy
 
 on:
   schedule:
-    - cron: '0 7 * * 3'
+    - cron: '0 7 * * *'
   workflow_dispatch:
 
 # Never run two deploys at once. A newer run waits for the current one.

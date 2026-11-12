@@ -113,11 +113,11 @@ applies to the landing page, the blog, and the 404 page together.
 ## Deploying
 
 Deploys normally happen in GitHub Actions (`.github/workflows/deploy.yml`):
-every Wednesday at 07:00 UTC, and on demand from the Actions tab
+every day at 07:00 UTC, and on demand from the Actions tab
 (`gh workflow run deploy.yml`). Pushing to `main` does not deploy.
 Production builds exclude posts whose `pubDate` is in the future, so the
-weekly run publishes scheduled posts with no manual step. Date posts on a
-Wednesday: a post dated any other day waits for the next Wednesday run.
+daily run publishes scheduled posts with no manual step: a post goes live on
+the morning of its `pubDate`.
 Commit a finished post with its real `pubDate`; use `draft: true` only for
 posts that aren't ready.
 
