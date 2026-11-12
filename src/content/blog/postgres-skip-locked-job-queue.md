@@ -3,7 +3,6 @@ title: "A Postgres job queue in one statement, and what breaks when you remove e
 description: "UPDATE ... WHERE id = (SELECT ... FOR UPDATE SKIP LOCKED) is the standard Postgres job queue. I removed its parts one at a time: duplicate claims, workers that think the queue is empty, and a queue that runs in single file."
 pubDate: 2026-11-18
 tags: ['PostgreSQL', 'Go', 'Distributed Systems']
-draft: true
 ---
 
 The CI service I'm building stores its runs in Postgres, and workers take

@@ -3,7 +3,6 @@ title: "CHECK constraints guard states, not transitions"
 description: "A CHECK constraint can't stop a finished CI run from going back to queued, because it only sees the new row. A conditional UPDATE can. Here's the compare-and-swap pattern in Postgres, the read-then-write version that let 19 of 20 goroutines win, and two type errors along the way."
 pubDate: 2026-12-02
 tags: ['PostgreSQL', 'Go', 'Architecture']
-draft: true
 ---
 
 Every run in my CI service moves through a small state machine:

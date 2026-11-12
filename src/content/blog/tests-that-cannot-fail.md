@@ -3,7 +3,6 @@ title: "A test that can't fail doesn't test anything"
 description: "After every new test, I break the code it covers and check that the test notices. Here are eight examples from one Go project: tests that passed no matter what, a race caught one time in three, and a test that passed by accident on one backend but not the other."
 pubDate: 2026-12-09
 tags: ['Testing', 'Go']
-draft: true
 ---
 
 There's one habit from building my CI service that I'd keep on any project.

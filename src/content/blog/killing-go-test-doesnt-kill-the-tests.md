@@ -3,7 +3,6 @@ title: "Killing `go test` doesn't kill the tests"
 description: "exec.CommandContext kills only the process it started. go test runs your tests in a child process, so a timeout either leaves orphans behind or hangs Wait, depending on how you call it. Here's what I measured and the four lines that fix it."
 pubDate: 2026-11-25
 tags: ['Go', 'Linux', 'CI']
-draft: true
 ---
 
 My CI worker runs `go build`, `go vet` and `go test` on code it didn't write.

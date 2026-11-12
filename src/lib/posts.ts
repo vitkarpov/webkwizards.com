@@ -4,11 +4,17 @@ export type Post = CollectionEntry<'blog'>;
 
 /**
  * Every post that should be public, newest first.
- * Drafts are visible in `astro dev` so they can be previewed, and dropped from
- * production builds so they never reach S3.
+ * Drafts and future-dated posts are visible in `astro dev` so they can be
+ * previewed, and dropped from production builds so they never reach S3.
+ * A finished post can be committed with its real pubDate and will go live on
+ * the first production build on or after that date (pubDate is midnight UTC).
  */
 export async function getPublishedPosts(): Promise<Post[]> {
-  const posts = await getCollection('blog', ({ data }) => import.meta.env.PROD !== true || !data.draft);
+  const now = Date.now();
+  const posts = await getCollection(
+    'blog',
+    ({ data }) => import.meta.env.PROD !== true || (!data.draft && data.pubDate.valueOf() <= now),
+  );
 
   return posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 }
