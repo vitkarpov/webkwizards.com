@@ -11,6 +11,16 @@ variable "github_repository" {
   default     = "vitkarpov/webkwizards.com"
 }
 
+# The repo uses GitHub's immutable OIDC subject, which embeds the owner and
+# repository IDs as well as the names, so a deleted-and-recreated repo with the
+# same name can't assume the role. Look it up with:
+#   gh api repos/vitkarpov/webkwizards.com/actions/oidc/customization/sub
+variable "github_oidc_subject_prefix" {
+  description = "sub_claim_prefix of the repository's OIDC tokens"
+  type        = string
+  default     = "repo:vitkarpov@3001791/webkwizards.com@1455052586"
+}
+
 # Only one provider per URL can exist in an account. If another project already
 # created it, import it instead of creating it:
 #   terraform import aws_iam_openid_connect_provider.github \
@@ -41,7 +51,7 @@ resource "aws_iam_role" "github_deploy" {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
           # Only workflows running on main. Pull requests and other branches
           # cannot assume the role.
-          "token.actions.githubusercontent.com:sub" = "repo:${var.github_repository}:ref:refs/heads/main"
+          "token.actions.githubusercontent.com:sub" = "${var.github_oidc_subject_prefix}:ref:refs/heads/main"
         }
       }
     }]

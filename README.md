@@ -113,15 +113,18 @@ applies to the landing page, the blog, and the 404 page together.
 ## Deploying
 
 Deploys normally happen in GitHub Actions (`.github/workflows/deploy.yml`):
-on every push to `main`, every day at 07:00 UTC, and on demand from the Actions
-tab. Production builds exclude posts whose `pubDate` is in the future, so the
-daily run publishes scheduled posts on their date with no manual step.
+every Wednesday at 07:00 UTC, and on demand from the Actions tab
+(`gh workflow run deploy.yml`). Pushing to `main` does not deploy.
+Production builds exclude posts whose `pubDate` is in the future, so the
+weekly run publishes scheduled posts with no manual step. Date posts on a
+Wednesday: a post dated any other day waits for the next Wednesday run.
 Commit a finished post with its real `pubDate`; use `draft: true` only for
 posts that aren't ready.
 
 The workflow authenticates to AWS through the OIDC role in `github-actions.tf`,
-so the repository holds no AWS keys. Creating that role needs IAM permissions
-beyond PowerUserAccess, so apply it once with an admin login.
+so the repository holds no AWS keys. That file manages IAM resources, which
+PowerUserAccess can't read or create, so run `terraform plan`/`apply` with the
+`webkwizards-admin` profile (AdministratorAccess).
 
 GitHub pauses scheduled workflows in repositories with no activity for 60
 days. Pushing a commit, or re-enabling the workflow in the Actions tab,
