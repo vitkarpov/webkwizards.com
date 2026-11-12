@@ -1,0 +1,49 @@
+# Builds and publishes the site.
+#
+# - Every day at 07:00 UTC, so a post whose pubDate has arrived goes live
+#   without anyone running a deploy (see getPublishedPosts in src/lib/posts.ts).
+# - On every push to main, so merged changes ship immediately.
+# - On demand from the Actions tab.
+#
+# AWS access is through the OIDC role defined in github-actions.tf.
+name: Deploy
+
+on:
+  schedule:
+    - cron: '0 7 * * *'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never run two deploys at once. A newer run waits for the current one.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write # required to request the OIDC token for AWS
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BUCKET: webkwizards.com
+      DISTRIBUTION_ID: ETYX23IAQUFHZ
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::010526241219:role/webkwizards-github-deploy
+          aws-region: us-east-1
+
+      - run: ./deploy.sh

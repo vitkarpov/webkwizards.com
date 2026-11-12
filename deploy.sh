@@ -14,7 +14,11 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-export AWS_PROFILE="${AWS_PROFILE:-webkwizards}"
+# Default to the SSO profile locally. In CI, credentials arrive as environment
+# variables, and naming a profile that doesn't exist there would break them.
+if [[ -z "${AWS_ACCESS_KEY_ID:-}" ]]; then
+  export AWS_PROFILE="${AWS_PROFILE:-webkwizards}"
+fi
 
 for cmd in aws npm; do
   command -v "$cmd" >/dev/null || { echo "error: '$cmd' is not installed" >&2; exit 1; }
@@ -25,8 +29,8 @@ BUCKET="${BUCKET:-$(terraform output -raw s3_bucket_name)}"
 DISTRIBUTION_ID="${DISTRIBUTION_ID:-$(terraform output -raw cloudfront_distribution_id)}"
 
 if ! aws sts get-caller-identity >/dev/null 2>&1; then
-  echo "error: AWS credentials for profile '$AWS_PROFILE' are not valid." >&2
-  echo "       Run: aws sso login --profile $AWS_PROFILE" >&2
+  echo "error: AWS credentials for profile '${AWS_PROFILE:-<env>}' are not valid." >&2
+  echo "       Run: aws sso login --profile ${AWS_PROFILE:-webkwizards}" >&2
   exit 1
 fi
 
