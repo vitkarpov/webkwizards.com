@@ -199,3 +199,7 @@
 .cta-band .btn-primary:hover { background: var(--paper); color: var(--ink); box-shadow: 5px 5px 0 var(--accent); }
 .cta-band .btn-ghost { background: transparent; color: var(--paper); border-color: var(--paper); }
 .cta-band .btn-ghost:hover { background: var(--paper); color: var(--ink); box-shadow: 5px 5px 0 var(--accent); }
+
+/* ---------- OPEN SOURCE ---------- */
+.oss a.card { display: block; color: inherit; text-decoration: none; }
+.oss .card h3 { overflow-wrap: anywhere; }
