@@ -65,6 +65,51 @@ return ok, nil
 The webhook also sends a "typing…" action as soon as the job is queued, so
 the chat sees the bot react right away.
 
+## "Has no access to messages", and yet it reads them
+
+After adding the bot to our group, I opened the member list and saw this:
+
+![The bot "tldr" in a Telegram group's member list, with the status "has no access to messages" under its name.](/images/tldr-bot-no-access.png)
+
+My first thought was that I'd set something up wrong. How is a bot that
+summarizes messages supposed to work without access to them? It turns out
+that's exactly the setup you want.
+
+Telegram bots have **privacy mode**, and it's on by default. You can switch it
+off in [@BotFather](https://t.me/BotFather), but I left it on. In a group, a
+bot in privacy mode doesn't receive the normal conversation. It gets a short
+list of things, including:
+
+- commands meant for it, like `/tldr` or `/tldr@the_bot`,
+- replies to its own messages,
+- service messages, like someone joining the group.
+
+"Has no access to messages" is how Telegram shows that to the people in the
+group. The bot can't read what you're chatting about.
+
+The trick is in the second half of a command update. When you **reply** to a
+voice message with `/tldr`, the update Telegram sends to the bot includes the
+message you replied to, in `reply_to_message`. That message carries the
+voice file's `file_id`, its duration, and who sent it. With the `file_id`, the
+bot can download the audio through `getFile`, even though it never saw the
+voice message arrive.
+
+So the bot sees exactly one message: the one a person chose by replying to it.
+That's the right privacy model for a bot in a friends' chat, and it shaped the
+design:
+
+- **Reply-to is the only way in.** The Bot API has no method for reading chat
+  history, so a bot can't go back and fetch "the last voice message". If
+  someone sends `/tldr` without replying to anything, the bot explains how to
+  reply with a swipe.
+- **Nothing to store.** The bot never receives the rest of the chat, so it
+  can't log it by accident.
+- **Don't make it an admin.** Telegram sends every message in a group to a bot
+  that's an admin, whatever the privacy setting. Promote it and the "no access"
+  label, and the guarantee behind it, are gone.
+- **DMs are different.** In a private chat the bot gets everything you send
+  it, so there you can just forward a voice message without any command.
+
 ## Transcribe is a batch service, so you poll
 
 Amazon Transcribe has a streaming API, but for a file you already have, the
@@ -254,11 +299,6 @@ a funny poem in a group chat.
   "11 минут". The rule depends on the last digit, with a special case for
   11–14. It's a tiny function, and it has a test, because getting it wrong in
   front of friends is embarrassing.
-- **Privacy mode stays on.** In a group, the bot only receives `/commands`, so
-  it never sees the rest of the chat. That's also why you reply *to* the voice
-  message: the command arrives with the message it's replying to attached.
-- **DMs work without a command.** Forward a voice message to the bot in a
-  private chat and it summarizes it straight away.
 - **`/summary@SomeOtherBot` is ignored.** Groups can have several bots, and
   answering commands meant for another bot is rude.
 - **Failures are announced once.** A job gets two attempts. On the last one the
