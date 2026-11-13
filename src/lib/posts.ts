@@ -47,3 +47,12 @@ export function tagSlug(tag: string): string {
 export function tagUrl(tag: string): string {
   return `/blog/tags/${tagSlug(tag)}/`;
 }
+
+/**
+ * Stable issue number for a post ("N° 007"): its position in publication
+ * order, oldest first, so new posts never renumber the old ones.
+ */
+export function postNumber(post: Post, all: Post[]): string {
+  const oldestFirst = all.length - all.findIndex((p) => p.id === post.id);
+  return String(oldestFirst).padStart(3, '0');
+}

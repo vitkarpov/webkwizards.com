@@ -1,35 +1,65 @@
 ---
-import { postUrl, type Post } from '../lib/posts';
+import PixelIcon, { type IconName } from './PixelIcon.astro';
+import { getPublishedPosts, postNumber, postUrl, type Post } from '../lib/posts';
 import { formatDate, isoDate, readingTime } from '../lib/format';
 
 interface Props {
   posts: Post[];
+  /** h2 on the blog index; h3 when the list sits under a section heading. */
+  heading?: 'h2' | 'h3';
 }
 
-const { posts } = Astro.props;
+const { posts, heading: Heading = 'h2' } = Astro.props;
+
+// Numbers come from the full archive so a post keeps its N° on tag pages too.
+const all = await getPublishedPosts();
+
+const TAG_ICONS: Record<string, IconName> = {
+  ai: 'spark',
+  postgresql: 'db',
+  kubernetes: 'boxes',
+  aws: 'cloud',
+  testing: 'bug',
+  security: 'lock',
+  architecture: 'layers',
+  ci: 'rocket',
+  linux: 'terminal',
+  go: 'terminal',
+};
+
+function iconFor(post: Post): IconName {
+  for (const tag of post.data.tags) {
+    const icon = TAG_ICONS[tag.toLowerCase()];
+    if (icon) return icon;
+  }
+  return 'chip';
+}
 ---
 
-<ul class="posts">
+<ul class="post-grid">
   {
     posts.map((post) => (
       <li>
-        {/* The whole row is the link target, so tags render as plain labels here. */}
-        <a class="post-row" href={postUrl(post)}>
-          <div class="when">
-            <time datetime={isoDate(post.data.pubDate)}>{formatDate(post.data.pubDate)}</time>
-            <span class="reading">{readingTime(post.body)}</span>
+        {/* The whole card is the link target, so tags render as plain labels here. */}
+        <a class="post-card" href={postUrl(post)}>
+          <div class="card-top">
+            <PixelIcon name={iconFor(post)} />
+            <span class="no">N° {postNumber(post, all)}</span>
           </div>
-          <div>
-            <h2>
-              {post.data.title}
-              {post.data.draft && <span class="draft-flag">Draft</span>}
-            </h2>
-            <p class="excerpt">{post.data.description}</p>
+          <Heading class="card-title">
+            {post.data.title}
+            {post.data.draft && <span class="draft-flag">Draft</span>}
+          </Heading>
+          <p class="excerpt">{post.data.description}</p>
+          <div class="card-meta">
+            <div>
+              <time datetime={isoDate(post.data.pubDate)}>{formatDate(post.data.pubDate)}</time>
+              <span aria-hidden="true"> · </span>
+              {readingTime(post.body)}
+            </div>
             {post.data.tags.length > 0 && (
-              <div class="tags">
-                {post.data.tags.map((tag) => (
-                  <span class="tag">{tag}</span>
-                ))}
+              <div class="card-tags">
+                <span class="k">Tags</span> {post.data.tags.join(' · ')}
               </div>
             )}
           </div>
@@ -38,3 +68,76 @@ const { posts } = Astro.props;
     ))
   }
 </ul>
+
+<style>
+  .post-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    padding: 26px;
+  }
+  @media (max-width: 980px) { .post-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 640px) { .post-grid { grid-template-columns: 1fr; gap: 14px; padding: 16px; } }
+
+  .post-grid li { display: flex; }
+  .post-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 22px 18px;
+    background: var(--card);
+    border: 1px solid var(--line-strong);
+    border-radius: 3px;
+    box-shadow: inset 0 1px 0 #fff, 0 1px 2px rgba(0, 0, 0, 0.06);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: inset 0 1px 0 #fff, 0 10px 22px -14px rgba(0, 0, 0, 0.35);
+  }
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
+  }
+  .no { font-size: 0.74rem; letter-spacing: 0.14em; color: var(--ink-mute); }
+  .post-card:hover .no { color: var(--orange-ink); }
+
+  .card-title {
+    font-size: 1.04rem;
+    font-weight: 600;
+    line-height: 1.45;
+    letter-spacing: -0.005em;
+    margin-bottom: 10px;
+  }
+  .excerpt { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.65; margin-bottom: 18px; }
+
+  .card-meta {
+    margin-top: auto;
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+    font-size: 0.74rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    display: grid;
+    gap: 8px;
+  }
+  .card-tags { text-transform: none; letter-spacing: 0.04em; }
+  .card-tags .k { color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.12em; margin-right: 6px; }
+
+  .draft-flag {
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--orange-ink);
+    border-radius: 3px;
+    padding: 2px 6px;
+    margin-left: 8px;
+    vertical-align: 0.15em;
+  }
+</style>

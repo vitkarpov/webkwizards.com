@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import PostList from '../../../components/PostList.astro';
+import NotesIndex from '../../../components/NotesIndex.astro';
 import { getPublishedPosts, tagSlug } from '../../../lib/posts';
 import { AUTHOR } from '../../../consts';
 import '../../../styles/blog.css';
@@ -37,13 +37,10 @@ const description = `Posts tagged “${label}” — notes on building AI produc
 ---
 
 <BaseLayout title={`${label} — Notes — ${AUTHOR}`} description={description}>
-  <section>
-    <div class="sec-head">
-      <span class="eyebrow"><b>Notes</b> — <a href="/blog/">All posts</a></span>
-      <h1>Tagged: {label}</h1>
-      <p>{posts.length} {posts.length === 1 ? 'post' : 'posts'} tagged “{label}”.</p>
-    </div>
-
-    <PostList posts={posts} />
-  </section>
+  <NotesIndex
+    title={`Tagged: ${label}`}
+    description={`${posts.length} ${posts.length === 1 ? 'post' : 'posts'} tagged “${label}”.`}
+    posts={posts}
+    activeTag={label}
+  />
 </BaseLayout>

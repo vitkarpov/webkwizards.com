@@ -1,21 +1,23 @@
 ---
 import { AUTHOR, CAL_URL } from '../consts';
 
-// Highlight the Blog tab for /blog/ and every post underneath it.
-const onBlog = Astro.url.pathname.startsWith('/blog/');
+// Highlight Blog for /blog/ and every post underneath it, Home for the landing page.
+const path = Astro.url.pathname;
+const onBlog = path.startsWith('/blog/');
+const onHome = path === '/';
 ---
 
 <header class="site-header">
-  <div class="nav">
+  <div class="container nav">
     <a href="/" class="brand" aria-label={AUTHOR}>
-      <span class="mark">VK</span> <span class="brand-name">{AUTHOR}</span>
+      <span class="full">Viktor Karpov</span><span class="short" aria-hidden="true">VK</span>
     </a>
     <nav class="nav-links" aria-label="Primary">
-      <a href="/#services">Services</a>
-      <a href="/#work">Work</a>
-      <a href="/#about">About</a>
-      <a href="/blog/" class="nav-blog" aria-current={onBlog ? 'page' : undefined}>Blog</a>
-      <a href={CAL_URL} target="_blank" rel="noopener" class="nav-cta">Book a call</a>
+      <a href="/" class="anchor" aria-current={onHome ? 'page' : undefined}>Home</a>
+      <a href="/#services" class="anchor">Services</a>
+      <a href="/#work" class="anchor">Work</a>
+      <a href="/blog/" aria-current={onBlog ? 'page' : undefined}>Blog</a>
     </nav>
+    <a href={CAL_URL} target="_blank" rel="noopener" class="btn btn-primary nav-cta">Book a call</a>
   </div>
 </header>
