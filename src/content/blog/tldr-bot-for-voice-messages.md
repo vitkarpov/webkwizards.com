@@ -18,7 +18,7 @@ roast on top. You can also ask for a style:
 
 That's me showing off my desk for 13 seconds, and the bot taking me down a
 peg. (It was asked to sound like a sports commentator. It sounded like a
-slightly sarcastic friend instead. I'll take it.)
+slightly sarcastic friend instead. More on that below.)
 
 Everything the bot says is in Russian, because that's what our chat speaks.
 Here's how it works, and the parts that turned out to be more fun than I
@@ -170,14 +170,62 @@ the biggest difference:
 - **A "👉" line for the ask.** If the message has a question or request for the
   group, the summary ends with it, stated plainly. You can see it in the
   screenshot. This is the most useful line in the summary.
-- **Native, not translated.** Asking for Russian "like a witty friend in the
-  chat would write it, not like a translation" made the jokes much better.
+- **Native, not translated.** Asking for Russian that sounds "native and
+  colloquial, not like a translation" made the jokes much better.
 - **Don't laugh at recognition errors.** Transcripts are machine-generated, and
   mocking the transcription's mistakes isn't fair to the speaker.
 
 The model also gets some context: who sent the message, who asked for the
 summary, and how long the message is. So it can say "Viktor, your workstation
 is…" instead of "the speaker".
+
+## Why the sports commentator never showed up
+
+Look at the screenshot again. I asked for a sports commentator and got a
+friendly roast with ⚡ emoji. So I ran the same transcript through the model
+three times. Two of the three summaries ignored the style completely. The
+third added some ⚽ emoji and called it a day.
+
+The prompt was working against the style in two ways:
+
+- **The style was framed as an afterthought.** The style hint went in as
+  "Requested style (apply it on top of the rules, it can't override them)".
+  I wrote that to stop people using the style to break the rules. The model
+  read it as "the rules matter, the style is optional", and it was right to.
+- **Another rule already picked a voice.** The language rule asked for Russian
+  "like a witty friend in the chat would write it". That's a persona too, and
+  it was in the system prompt. A friend and a sports commentator can't both
+  narrate the same summary, and the friend won.
+
+The fix was three changes:
+
+1. **A real rule for styles in the system prompt.** If someone asks for a
+   persona, write the whole summary in that voice, "from the first word to the
+   last". The rule also says the style changes the voice, not the rules: facts,
+   format, length, and the "👉" line still apply. That's the same safety as
+   before, but now it says what the style *should* do, not only what it can't.
+2. **Take out the competing persona.** The language rule now only asks for
+   Russian that's "native and colloquial, not like a translation".
+3. **Repeat the style after the transcript.** The style used to come before
+   the transcript, so the model's last memory of it was a few hundred words
+   back. Now the user message ends with "Write the summary fully in this
+   style: …. Stay in character in every line, and use that persona's typical
+   phrases and turns of speech." The last thing a small model reads before it
+   writes has a lot of pull.
+
+After that, most runs opened in character, with lines like "Гол! Виктор
+показывает новое рабочее место!" ("Goal! Viktor shows off his new desk!") and
+"Судья на поле!" ("The referee is on the pitch!"). "Like a pirate" went all
+in, starting with "Аррр" and turning my desk into a "пиратская база" ("pirate
+base"). It's not perfect: about one run in three still comes out as a plain
+summary.
+Nova Lite is a small model, and a bigger one would probably hold the
+character better. For a group-chat bot, this is good enough.
+
+The lesson I'd take to any prompt: **a rule that only says what not to do
+reads as "don't bother".** If you want a feature, say what it should look
+like, take out the rules that pull the other way, and put the instruction
+last.
 
 ## A voice message can try to jailbreak the bot
 
