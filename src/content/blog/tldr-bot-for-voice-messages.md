@@ -22,8 +22,9 @@ peg. (It was asked to sound like a sports commentator. It sounded like a
 slightly sarcastic friend instead. More on that below.)
 
 Everything the bot says is in Russian, because that's what our chat speaks.
-Here's how it works, and the parts that turned out to be more fun than I
-expected.
+The code is open source at
+[github.com/vitkarpov/tldr](https://github.com/vitkarpov/tldr). Here's how it
+works, and the parts that turned out to be more fun than I expected.
 
 ## The shape of it
 
@@ -54,6 +55,10 @@ So the work is split in two:
   `200`, even when something goes wrong, because any other status gets the
   update redelivered, over and over.
 - The **worker** reads one job at a time and does the slow part.
+
+The difference is big. In practice the webhook finishes in about a quarter of
+a second, and the worker takes around 12 seconds, almost all of it waiting on
+Transcribe.
 
 ```go
 // Always answer 200: an error here makes Telegram redeliver the same update over and over.
@@ -157,6 +162,11 @@ The cache key matters. Telegram gives every file two IDs:
 
 The cache uses `file_unique_id`, so a voice message forwarded from another chat
 is still a cache hit.
+
+Here's the whole table after a morning of testing. Two cached transcripts, keyed
+by `file_unique_id`, and one quota counter for the group, all with an expiry:
+
+![The DynamoDB table tg-summary-state with three items. Two have keys starting with "tr#" followed by a Telegram file_unique_id, the language "ru-RU", an expires_at timestamp, and the start of a Russian transcript, such as "Привет. Это мое рабочее место. Смотри, какой у меня красивый ноутбук" ("Hi. This is my workstation. Look at my handsome laptop"). The third has a key starting with "quota#" followed by the chat ID, a count of 2, and its own expires_at.](/images/tldr-bot-dynamodb.png)
 
 One more catch: DynamoDB TTL deletes items **eventually**, sometimes days after
 they expire. If you want a real 72-hour cache, check `expires_at` yourself when
@@ -315,3 +325,6 @@ It's a small project that answers a very small problem with far too much
 infrastructure, which is exactly the fun of it. It won't make anyone record
 shorter voice messages. But now the long ones come with a TL;DR, and a roast
 for free.
+
+If your group chat has the same problem, the code, the prompt, and the
+Terraform are all on [GitHub](https://github.com/vitkarpov/tldr).
