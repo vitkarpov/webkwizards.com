@@ -1,39 +1,13 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import PostList from '../../components/PostList.astro';
-import { getAllTags, getPublishedPosts, tagUrl } from '../../lib/posts';
+import NotesIndex from '../../components/NotesIndex.astro';
+import { getPublishedPosts } from '../../lib/posts';
 import { BLOG_DESCRIPTION, BLOG_TITLE } from '../../consts';
 import '../../styles/blog.css';
 
 const posts = await getPublishedPosts();
-const tags = await getAllTags();
 ---
 
 <BaseLayout title={BLOG_TITLE} description={BLOG_DESCRIPTION}>
-  <section>
-    <div class="sec-head">
-      <span class="eyebrow"><b>Notes</b> — Writing</span>
-      <h1>Notes from the engine room.</h1>
-      <p>{BLOG_DESCRIPTION}</p>
-      {
-        tags.length > 0 && (
-          <div class="tags">
-            {tags.map(({ tag, count }) => (
-              <a class="tag" href={tagUrl(tag)}>
-                {tag} <span aria-hidden="true">·</span> {count}
-              </a>
-            ))}
-          </div>
-        )
-      }
-    </div>
-
-    {
-      posts.length > 0 ? (
-        <PostList posts={posts} />
-      ) : (
-        <p class="empty">No posts published yet — the first one is in the works.</p>
-      )
-    }
-  </section>
+  <NotesIndex title="Notes from the engine room." description={BLOG_DESCRIPTION} posts={posts} />
 </BaseLayout>

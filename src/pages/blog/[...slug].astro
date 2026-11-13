@@ -1,7 +1,7 @@
 ---
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getPublishedPosts, postUrl, tagUrl } from '../../lib/posts';
+import { getPublishedPosts, postNumber, postUrl, tagUrl } from '../../lib/posts';
 import { formatDate, isoDate, readingTime } from '../../lib/format';
 import { AUTHOR } from '../../consts';
 import '../../styles/blog.css';
@@ -16,11 +16,12 @@ export async function getStaticPaths() {
       post,
       newer: posts[i - 1] ?? null,
       older: posts[i + 1] ?? null,
+      number: postNumber(post, posts),
     },
   }));
 }
 
-const { post, newer, older } = Astro.props;
+const { post, newer, older, number } = Astro.props;
 const { Content, headings } = await render(post);
 const toc = headings.filter((h) => h.depth === 2);
 const { title, description, pubDate, updatedDate, tags, draft, image } = post.data;
@@ -35,20 +36,24 @@ const { title, description, pubDate, updatedDate, tags, draft, image } = post.da
   modifiedTime={updatedDate}
   noindex={draft}
 >
-  <article>
+  <article class="panel post">
+    <div class="panel-head">
+      <span class="path"><span class="dot red"></span><span><a href="/blog/">~/notes</a>/{post.id}</span></span>
+      <span class="aside">N° {number}</span>
+    </div>
+
     <header class="post-head">
-      <span class="eyebrow"><b>Notes</b> — <a href="/blog/">Back to all posts</a></span>
       <h1>{title}{draft && <span class="draft-flag">Draft</span>}</h1>
       <p class="lede">{description}</p>
 
       <div class="post-meta">
         <time datetime={isoDate(pubDate)}>{formatDate(pubDate)}</time>
-        <span class="sep">/</span>
+        <span class="sep">·</span>
         <span>{readingTime(post.body)}</span>
         {
           updatedDate && (
             <>
-              <span class="sep">/</span>
+              <span class="sep">·</span>
               <span>
                 Updated <time datetime={isoDate(updatedDate)}>{formatDate(updatedDate)}</time>
               </span>
@@ -61,7 +66,7 @@ const { title, description, pubDate, updatedDate, tags, draft, image } = post.da
         tags.length > 0 && (
           <div class="tags">
             {tags.map((tag) => (
-              <a class="tag" href={tagUrl(tag)}>
+              <a class="key" href={tagUrl(tag)}>
                 {tag}
               </a>
             ))}
@@ -78,7 +83,7 @@ const { title, description, pubDate, updatedDate, tags, draft, image } = post.da
       {
         toc.length > 0 && (
           <aside class="toc" aria-label="On this page">
-            <div class="toc-inner">
+            <div class="toc-inner screen">
               <span class="toc-label">On this page</span>
               <ol>
                 {toc.map((h) => (
@@ -92,19 +97,24 @@ const { title, description, pubDate, updatedDate, tags, draft, image } = post.da
         )
       }
     </div>
+
+    <div class="panel-foot">
+      <a href="/blog/">← All posts</a>
+      <a href="/#contact">Need a hand with this? Book a call →</a>
+    </div>
   </article>
 
   {
     (older || newer) && (
       <nav class="post-nav" aria-label="More posts">
         {older && (
-          <a href={postUrl(older)}>
+          <a href={postUrl(older)} class="panel">
             <span class="dir">← Older</span>
             <span class="to-title">{older.data.title}</span>
           </a>
         )}
         {newer && (
-          <a href={postUrl(newer)} class="next">
+          <a href={postUrl(newer)} class="panel next">
             <span class="dir">Newer →</span>
             <span class="to-title">{newer.data.title}</span>
           </a>
@@ -129,7 +139,7 @@ const { title, description, pubDate, updatedDate, tags, draft, image } = post.da
   if (sections.length) {
     const update = () => {
       // Last heading that has scrolled past the sticky nav (+ some slack).
-      const cutoff = 120;
+      const cutoff = 140;
       let current = sections[0];
       for (const el of sections) {
         if (el.getBoundingClientRect().top <= cutoff) current = el;

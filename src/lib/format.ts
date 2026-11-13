@@ -1,14 +1,9 @@
 /**
- * Dates in frontmatter are parsed as UTC midnight, so format in UTC too —
- * otherwise a negative timezone offset renders the previous day.
+ * Dotted date, e.g. 2026.11.13. Frontmatter dates are parsed as UTC midnight,
+ * so read the UTC fields — a negative timezone offset would show the previous day.
  */
 export function formatDate(date: Date): string {
-  return date.toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'UTC',
-  });
+  return date.toISOString().slice(0, 10).replaceAll('-', '.');
 }
 
 /** ISO date (YYYY-MM-DD) for <time datetime="…">. */

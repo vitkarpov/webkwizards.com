@@ -5,14 +5,15 @@ const year = new Date().getFullYear();
 ---
 
 <footer>
-  <div class="foot">
-    <div class="copy">© {year} {AUTHOR} — Fractional CTO</div>
+  <div class="container foot">
+    <div class="copy"><span class="dot green"></span> © {year} {AUTHOR} — Fractional CTO · Edinburgh, UK</div>
     <div class="foot-links">
-      <a href="/blog/">Blog</a>
-      <a href={LINKEDIN_URL} target="_blank" rel="noopener">LinkedIn</a>
-      <a href={`mailto:${EMAIL}`}>Email</a>
-      <a href="/rss.xml">RSS</a>
-      <a href="#top">Top ↑</a>
+      <a class="key" href="/blog/">Blog</a>
+      <a class="key" href="https://github.com/vitkarpov" target="_blank" rel="noopener">GitHub</a>
+      <a class="key" href={LINKEDIN_URL} target="_blank" rel="noopener">LinkedIn</a>
+      <a class="key" href={`mailto:${EMAIL}`}>Email</a>
+      <a class="key" href="/rss.xml">RSS</a>
+      <a class="key" href="#top">Top ↑</a>
     </div>
   </div>
 </footer>

@@ -1,0 +1,51 @@
+---
+import PostList from './PostList.astro';
+import { getAllTags, tagSlug, tagUrl, type Post } from '../lib/posts';
+
+interface Props {
+  title: string;
+  description: string;
+  posts: Post[];
+  /** Tag label currently being filtered on; undefined for the full archive. */
+  activeTag?: string;
+}
+
+const { title, description, posts, activeTag } = Astro.props;
+const tags = await getAllTags();
+const activeSlug = activeTag && tagSlug(activeTag);
+const count = String(posts.length).padStart(2, '0');
+---
+
+<section class="panel notes">
+  <div class="panel-head">
+    <span class="path"><span class="dot red"></span>~/notes{activeSlug && `/${activeSlug}`}</span>
+    <span class="aside"><a href="/rss.xml">RSS</a></span>
+  </div>
+
+  <div class="intro">
+    <h1>{title}</h1>
+    <p>{description}</p>
+  </div>
+
+  {
+    tags.length > 0 && (
+      <nav class="tag-bar" aria-label="Filter by tag">
+        <a class="key" href="/blog/" aria-current={activeSlug ? undefined : 'page'}>
+          All
+        </a>
+        {tags.map(({ tag, count }) => (
+          <a class="key" href={tagUrl(tag)} aria-current={tagSlug(tag) === activeSlug ? 'page' : undefined}>
+            {tag} <span class="n">{count}</span>
+          </a>
+        ))}
+      </nav>
+    )
+  }
+
+  {posts.length > 0 ? <PostList posts={posts} /> : <p class="empty">No posts published yet — the first one is in the works.</p>}
+
+  <div class="panel-foot">
+    <span>01–{count} / {count}</span>
+    {activeSlug && <a href="/blog/">← All posts</a>}
+  </div>
+</section>
