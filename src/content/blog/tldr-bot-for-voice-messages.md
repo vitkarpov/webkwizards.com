@@ -10,9 +10,10 @@ Every group chat has one friend who records a three-minute voice message to say
 "running late". Ours has a few. Some of us listen at 2x, some of us never
 listen, and some reply "👍" and hope for the best.
 
-So I built a bot for it. You reply to a voice message or a round video with
-`/tldr`, and a few seconds later the bot posts a short summary with a light
-roast on top. You can also ask for a style:
+So I built a bot for it, called tldr
+([@bfeatb_bot](https://t.me/bfeatb_bot) on Telegram). You reply to a voice
+message or a round video with `/tldr`, and a few seconds later the bot posts
+a short summary with a light roast on top. You can also ask for a style:
 
 ![A Telegram chat. Viktor posts a 13-second round video showing off his desk. A reply to it says "/tldr как спортивный комментатор" ("/tldr like a sports commentator"). The bot answers in Russian: "Viktor, your workstation is a mini-lab of gadgetry! ⚡ You showed off your handsome laptop and a monitor with code running on it. ⚡ The workplace is a true tech kingdom. 👉 You'd like someone to send you a discount on gear like this? 😜"](/images/tldr-bot-demo.png)
 
@@ -80,7 +81,7 @@ off in [@BotFather](https://t.me/BotFather), but I left it on. In a group, a
 bot in privacy mode doesn't receive the normal conversation. It gets a short
 list of things, including:
 
-- commands meant for it, like `/tldr` or `/tldr@the_bot`,
+- commands meant for it, like `/tldr` or `/tldr@bfeatb_bot`,
 - replies to its own messages,
 - service messages, like someone joining the group.
 
