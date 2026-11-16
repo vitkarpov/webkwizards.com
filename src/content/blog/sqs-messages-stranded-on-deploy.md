@@ -1,11 +1,11 @@
 ---
 title: "Every deploy was quietly stranding SQS messages for 15 minutes"
-description: "An SQS message-age alarm fired on an empty queue. The cause: our Node workers ignored SIGTERM, so each ECS deploy killed them mid-message. Here's how we traced it and the 60-line fix."
+description: "An SQS message-age alarm fired on an empty queue. The cause: Sky's Node workers ignored SIGTERM, so each ECS deploy killed them mid-message. Here's how we traced it and the 60-line fix."
 pubDate: 2026-11-05
 tags: ['AWS', 'Node.js', 'Reliability']
 ---
 
-An alarm went off on our dev environment: the oldest message on a
+An alarm went off on Sky's dev environment: the oldest message on a
 document-processing queue had been waiting more than five minutes. That queue
 normally drains in milliseconds, so I expected a backlog. There wasn't one.
 
@@ -42,16 +42,16 @@ sequence:
 Draining is meant for HTTP: the load balancer stops sending new requests and
 gives existing ones time to finish. But an SQS consumer doesn't care about the
 load balancer. It keeps pulling work until the process dies, and nothing told
-our process it was about to.
+the process it was about to.
 
 ## Nobody was listening for SIGTERM
 
 When ECS stops a task, it sends `SIGTERM` to the container, waits up to
-`stopTimeout` (120 seconds in our task definition), and then sends `SIGKILL`.
-That gap is your chance to shut down cleanly. Our Node app had no `SIGTERM`
+`stopTimeout` (120 seconds in Sky's task definition), and then sends `SIGKILL`.
+That gap is your chance to shut down cleanly. Sky's Node app had no `SIGTERM`
 handler, so it never used it.
 
-There's a second detail that's easy to miss. Our entrypoint script ends with
+There's a second detail that's easy to miss. Sky's entrypoint script ends with
 `exec "$@"`, which makes Node **PID 1** in the container. Linux doesn't apply a
 signal's default action to PID 1. A normal process with no handler is killed by
 `SIGTERM`, but PID 1 with no handler simply ignores it. Either way the outcome
@@ -114,7 +114,7 @@ export function registerGracefulShutdown({ server, consumers, timeoutMs }) {
 A few decisions worth explaining:
 
 - **The timeout is 100 seconds, not 120.** It has to fit inside ECS's
-  `stopTimeout`, with enough margin that we exit on our own terms rather than
+  `stopTimeout`, with enough margin that the worker exits on its own terms rather than
   being killed.
 - **No `stop({ abort: true })`.** Aborting cancels the long poll faster, but it
   also cancels any `DeleteMessage` request that's in flight. A message we had

@@ -1,6 +1,6 @@
 ---
-title: "Our WebSocket validator threw away every success message, and TypeScript couldn't see it"
-description: "A dialog hung forever though the server replied in a second. Our WebSocket messages lived outside the OpenAPI spec, so each side hand-wrote its own types, and the client's validator rejected the real reply. How we moved them into the spec, and proved the compiler now catches it."
+title: "Sky's WebSocket validator threw away every success message, and TypeScript couldn't see it"
+description: "A dialog hung forever though the server replied in a second. Sky's WebSocket messages lived outside the OpenAPI spec, so each side hand-wrote its own types, and the client's validator rejected the real reply. How we moved them into the spec, and proved the compiler now catches it."
 pubDate: 2026-12-23
 tags: ['TypeScript', 'Architecture', 'Testing']
 ---
@@ -77,7 +77,7 @@ hand, and nothing compared that type with what the server sent.
 
 ## Why the compiler didn't catch it
 
-Our REST API doesn't have this problem. The backend serves an OpenAPI spec,
+Sky's REST API doesn't have this problem. The backend serves an OpenAPI spec,
 and the frontend generates its client and models from it with
 [orval](https://orval.dev). The backend generates its own types from the same
 file with `openapi-typescript`. If someone renames a field in a REST response,
